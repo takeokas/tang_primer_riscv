@@ -1,0 +1,40 @@
+module LED1
+  (
+   input wire 	     CLK_IN,
+   input wire 	     RST_N,
+   input wire  [3:0] swta, //tact SW
+   input wire  [3:0] swtL, // toggle SW Left
+   input wire  [3:0] swtR, // toggle SW Right
+   output wire [3:0] g_led,
+   output wire [2:0] RGB_LED
+   );
+
+   parameter time_out = 25'd6_000_000;// 1/4 @24Mhz
+
+   reg [23:0] 	     counter;
+   reg [2:0]	     led;
+   reg [3:0]	     gled;
+
+   always @(posedge CLK_IN) begin
+      if(RST_N==1'b0) begin
+	 //counter <= 24'd0;
+	 led <= 3'b000;
+      end else begin
+	 if(counter== time_out) begin
+	    //led <= ~led;
+	    led <= led+1;
+	    counter <= 24'd0;
+	    gled  <=  gled + 1;
+	 end else begin
+	    counter <=counter+24'd1;
+	 end
+      end
+
+      gled  <= swtL + swtR +swta;
+   end
+   //assign RGB_LED = led ? 3'b111:3'b110;
+   //assign RGB_LED = led ? 3'b111:3'b101;
+   assign RGB_LED = led;
+   assign  g_led = gled;
+   
+endmodule
